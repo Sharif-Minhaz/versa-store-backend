@@ -24,14 +24,14 @@ const productSchema = new Schema(
 			type: Number,
 			default: 0,
 		},
-		images: [{ type: String, required: true }],
+		images: [{ url: String, publicId: String }],
 		brand: String,
 		stock: {
 			type: Number,
 			min: 1,
 			required: true,
 		},
-		variant: [{ type: String, price: Number, description: String }],
+		variant: [{ type: String, price: { type: Number, min: 1 }, description: String }],
 	},
 	{
 		timestamps: true,
