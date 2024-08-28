@@ -1,10 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const connectDB = require("./db");
+const connectDB = require("./db/index.js");
 const { errorHandler } = require("./middlewares/errorHandler.js");
-const setMiddlewares = require("./middlewares");
-const setRoutes = require("./routers");
+const setMiddlewares = require("./middlewares/index.js");
+const setRoutes = require("./routers/index.js");
 
 // set middlewares and routes
 setMiddlewares(app);
