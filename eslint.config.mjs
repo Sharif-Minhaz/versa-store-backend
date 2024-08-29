@@ -5,8 +5,7 @@ import nodePlugin from "eslint-plugin-node";
 export default [
 	{
 		files: ["**/*.js"],
-		languageOptions: { sourceType: "commonjs" },
-		languageOptions: { globals: globals.node },
+		languageOptions: { sourceType: "commonjs", globals: globals.node },
 		plugins: {
 			node: nodePlugin,
 		},

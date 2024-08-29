@@ -1,5 +1,5 @@
 exports.errorHandler = async (err, req, res, _next) => {
-	const statusCode = res.statusCode || 500;
+	const statusCode = 500;
 
 	res.json({
 		statusCode,

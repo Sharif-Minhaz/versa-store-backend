@@ -1,9 +1,14 @@
 const productHandler = require("./product.routes");
+const authHandler = require("./auth.routes");
 
 const routes = [
 	{
 		path: "products",
 		handler: productHandler,
+	},
+	{
+		path: "auth",
+		handler: authHandler,
 	},
 ];
 

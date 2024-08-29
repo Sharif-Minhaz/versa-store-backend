@@ -1,12 +1,11 @@
 const Product = require("../models/Product.model");
-const asyncHandler = require("express-async-handler");
 
-const getAllProducts = asyncHandler(async (query) => {
-	const products = await Product.find(query).populate("category");
+const getAllProducts = async (query) => {
+	const products = await Product.find(query).populate("category").lean();
 
 	return products;
-});
+};
 
-module.exports.ProductService = {
+module.exports.ProductServices = {
 	getAllProducts,
 };

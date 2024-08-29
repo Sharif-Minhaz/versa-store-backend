@@ -1,6 +1,7 @@
 const router = require("express").Router();
-const { getAllProductsController } = require("../controllers/product.controllers");
+const { ProductControllers } = require("../controllers/product.controllers");
+const catchAsync = require("../utils/catchAsync");
 
-router.get("/", getAllProductsController);
+router.get("/", catchAsync(ProductControllers.getAllProducts));
 
 module.exports = router;
