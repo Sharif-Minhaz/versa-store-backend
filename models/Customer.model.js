@@ -11,6 +11,12 @@ const customerSchema = new Schema(
 			required: true,
 			unique: true,
 		},
+		password: { type: String, select: false },
+		loginMethod: {
+			type: String,
+			enum: ["google", "form"],
+			default: "google",
+		},
 		phone: String,
 		image: { type: String, default: "https://randomuser.me/api/portraits/lego/5.jpg" },
 		imageKey: String,

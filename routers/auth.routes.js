@@ -1,12 +1,13 @@
 const router = require("express").Router();
 const { AuthControllers } = require("../controllers/auth.controllers");
 const catchAsync = require("../utils/catchAsync");
+const upload = require("../middlewares/upload");
 
 // authentication user
-router.post("/login", catchAsync(AuthControllers.customerLogin));
-router.post("/register", catchAsync(AuthControllers.customerRegister));
-router.post("/refresh-token", catchAsync(AuthControllers.refreshToken));
+router.post("/login", catchAsync(AuthControllers.login));
+router.post("/google", catchAsync(AuthControllers.continueWithGoogle));
+router.post("/register", upload.single("shopPhoto"), catchAsync(AuthControllers.register));
 
-// authentication admin
+router.post("/refresh-token", catchAsync(AuthControllers.refreshToken));
 
 module.exports = router;

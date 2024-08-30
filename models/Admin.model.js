@@ -17,9 +17,8 @@ const adminSchema = new Schema(
 			select: false,
 		},
 		phone: String,
-		image: { type: String, default: "https://randomuser.me/api/portraits/lego/5.jpg" },
+		image: { type: String, default: "https://randomuser.me/api/portraits/lego/7.jpg" },
 		imageKey: String,
-		isBan: { type: Boolean, default: false },
 		user_type: { type: String, default: "admin" },
 	},
 	{ timestamps: true }

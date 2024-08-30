@@ -1,6 +1,6 @@
 const cloudinary = require("./cloudinaryInit");
 
-async function uploadImageHandler(file, destination) {
+async function uploadImageHandler(file, destination = "versaShop") {
 	let uploadImage = {};
 
 	if (file) {
