@@ -1,5 +1,6 @@
 const productHandler = require("./product.routes");
 const authHandler = require("./auth.routes");
+const categoryHandler = require("./category.routes");
 
 const routes = [
 	{
@@ -9,6 +10,10 @@ const routes = [
 	{
 		path: "auth",
 		handler: authHandler,
+	},
+	{
+		path: "categories",
+		handler: categoryHandler,
 	},
 ];
 

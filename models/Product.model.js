@@ -2,7 +2,7 @@ const { model, Schema, models } = require("mongoose");
 
 const productSchema = new Schema(
 	{
-		categoryId: {
+		category: {
 			type: Schema.Types.ObjectId,
 			ref: "Category",
 			required: true,
@@ -31,6 +31,7 @@ const productSchema = new Schema(
 			min: 1,
 			required: true,
 		},
+		defaultType: String, // default variant
 		variant: [{ type: String, price: { type: Number, min: 1 }, description: String }],
 	},
 	{
