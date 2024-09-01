@@ -10,6 +10,7 @@ const customerSchema = new Schema(
 			type: String,
 			required: true,
 			unique: true,
+			immutable: true,
 		},
 		password: { type: String, select: false },
 		loginMethod: {
