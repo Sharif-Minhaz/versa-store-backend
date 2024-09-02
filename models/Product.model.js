@@ -2,6 +2,16 @@ const { model, Schema, models } = require("mongoose");
 
 const productSchema = new Schema(
 	{
+		addedBy: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			refPath: "addedByModel",
+		},
+		addedByModel: {
+			type: String,
+			required: true,
+			enum: ["Vendor", "Admin"],
+		},
 		category: {
 			type: Schema.Types.ObjectId,
 			ref: "Category",
@@ -32,7 +42,13 @@ const productSchema = new Schema(
 			required: true,
 		},
 		defaultType: String, // default variant
-		variant: [{ type: String, price: { type: Number, min: 1 }, description: String }],
+		variant: [
+			{
+				type: { type: String, required: true },
+				price: { type: Number, min: 1, required: true },
+				description: { type: String, required: true },
+			},
+		],
 	},
 	{
 		timestamps: true,

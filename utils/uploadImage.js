@@ -12,4 +12,13 @@ async function uploadImageHandler(file, destination = "versaShop") {
 	return uploadImage;
 }
 
-module.exports = { uploadImageHandler };
+const uploadImages = async (files) => {
+	return await Promise.all(
+		files.map((file) => {
+			const uploadResult = uploadImageHandler(file);
+			return uploadResult;
+		})
+	);
+};
+
+module.exports = { uploadImageHandler, uploadImages };

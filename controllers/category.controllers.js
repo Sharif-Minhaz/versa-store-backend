@@ -17,16 +17,21 @@ const addCategory = async (req, res) => {
 
 	if (!name) throwError("Category name is required", 400);
 
-	const isCategoryExist = await Category.exists({ name });
+	// check if the category already exist
+	const isCategoryExist = await Category.exists({
+		name: { $regex: new RegExp("^" + name + "$", "i") },
+	});
 
 	if (isCategoryExist) throwError("Category already exist", 409);
 
 	if (!imageFile) throwError("Category image is required", 400);
 
+	// upload category image
 	const uploadImg = await uploadImageHandler(imageFile);
 
 	if (!uploadImg) throwError("Error uploading image");
 
+	// create the category
 	const category = await Category.create({
 		name: req.body.name,
 		image: uploadImg.secure_url,
@@ -44,6 +49,7 @@ const findSingleCategory = async (req, res) => {
 
 	if (!categoryId) throwError("Category id is required", 400);
 
+	// get the category
 	const category = await Category.findById(categoryId).lean();
 
 	if (!category) throwError("This category doesn't exist", 404);
