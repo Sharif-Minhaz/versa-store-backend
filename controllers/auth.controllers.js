@@ -98,7 +98,7 @@ const refreshToken = async (req, res) => {
 
 // **************** update user ****************
 const updateUser = async (req, res) => {
-	const { updateFor = "customer" } = req.body;
+	const updateFor = req.user?.user_type || "customer";
 
 	let user = null;
 	// registration based on role

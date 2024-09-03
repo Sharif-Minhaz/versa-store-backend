@@ -1,6 +1,7 @@
 const Category = require("../models/Category.model");
 const Product = require("../models/Product.model");
 const { ProductServices } = require("../services/product.services");
+const { capitalize } = require("../utils/capitalizeString");
 const { deleteImage } = require("../utils/deleteImage");
 const { throwError } = require("../utils/throwError");
 const { uploadImages } = require("../utils/uploadImage");
@@ -46,6 +47,7 @@ const singleProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
 	const { category, variant } = req.body;
+	const { _id, user_type } = req.user;
 
 	if (!category) throwError("Category id required", 400);
 
@@ -64,6 +66,8 @@ const addProduct = async (req, res) => {
 
 	const newProduct = await Product.create({
 		...req.body,
+		addedBy: _id,
+		addedByModel: capitalize(user_type),
 		variant: parsedVariant,
 		images: shopImages.map((image) => ({ url: image.secure_url, publicId: image.public_id })),
 	});
@@ -76,6 +80,7 @@ const addProduct = async (req, res) => {
 
 // update product
 const updateProduct = async (req, res) => {
+	const userId = req.user?._id;
 	const { variant } = req.body;
 	const { productId } = req.params;
 	const images = req.files;
@@ -83,7 +88,12 @@ const updateProduct = async (req, res) => {
 	if (!productId) throwError("Product id required", 400);
 
 	// find product
-	const product = await Product.findById(productId).lean();
+	let product;
+	if (req.user?.user_type === "vendor") {
+		product = await Product.findOne({ _id: productId, addedBy: userId }).lean();
+	} else {
+		product = await Product.findById(productId).lean();
+	}
 
 	if (!product) throwError("Product not found", 404);
 
@@ -110,7 +120,7 @@ const updateProduct = async (req, res) => {
 			publicId: image.public_id,
 		})) || [];
 
-	const updateProduct = await Product.findByIdAndUpdate(
+	const updateProductInfo = await Product.findByIdAndUpdate(
 		productId,
 		{
 			...req.body,
@@ -123,7 +133,7 @@ const updateProduct = async (req, res) => {
 	res.status(200).json({
 		success: true,
 		message: "Product updated successfully",
-		product: updateProduct,
+		product: updateProductInfo,
 	});
 };
 
@@ -134,7 +144,14 @@ const deleteProduct = async (req, res) => {
 	if (!productId) throwError("Product id not found", 404);
 
 	// find the product
-	const product = await Product.findById(productId).select("images");
+	let product;
+	if (req.user?.user_type === "vendor") {
+		product = await Product.findById({ _id: productId, addedBy: req.user?._id }).select(
+			"images"
+		);
+	} else {
+		product = await Product.findById(productId).select("images");
+	}
 
 	if (!product) throwError("Product not found", 404);
 

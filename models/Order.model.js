@@ -40,13 +40,14 @@ const orderSchema = new Schema(
 		houseNo: String,
 		status: {
 			type: String,
-			enum: ["pending", "declined", "cart"],
+			enum: ["pending", "declined", "cart", "accepted"],
 			default: "pending",
 		},
 		tranxId: {
 			type: String,
 			required: true,
 		},
+		deliveryCharge: { type: Number, default: 0 },
 	},
 	{ timestamps: true }
 );

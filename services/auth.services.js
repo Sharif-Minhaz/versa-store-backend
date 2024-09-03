@@ -105,7 +105,7 @@ const vendorRegistration = async (body, file) => {
 
 // update user
 const customerUpdate = async (req) => {
-	const { userId } = req.params;
+	const userId = req.user?._id;
 	if (!userId) throwError("User id required", 400);
 
 	const customer = await Customer.findById(userId);
@@ -138,7 +138,7 @@ const customerUpdate = async (req) => {
 
 // vendor update
 const vendorUpdate = async (req) => {
-	const { userId } = req.params;
+	const userId = req.user?._id;
 	if (!userId) throwError("User id required", 400);
 
 	const vendor = await Vendor.findById(userId);
@@ -181,7 +181,7 @@ const vendorUpdate = async (req) => {
 
 // admin update
 const adminUpdate = async (req) => {
-	const { userId } = req.params;
+	const userId = req.user?._id;
 	if (!userId) throwError("User id required", 400);
 
 	const admin = await Admin.findById(userId);

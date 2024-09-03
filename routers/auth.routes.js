@@ -2,14 +2,21 @@ const router = require("express").Router();
 const { AuthControllers } = require("../controllers/auth.controllers");
 const catchAsync = require("../utils/catchAsync");
 const upload = require("../middlewares/upload");
+const { checkGuest, checkAuth } = require("../middlewares/auth");
 
 // authentication user
-router.post("/login", catchAsync(AuthControllers.login));
-router.post("/google", catchAsync(AuthControllers.continueWithGoogle));
-router.post("/register", upload.single("shopPhoto"), catchAsync(AuthControllers.register));
+router.post("/login", checkGuest, catchAsync(AuthControllers.login));
+router.post("/google", checkGuest, catchAsync(AuthControllers.continueWithGoogle));
+router.post(
+	"/register",
+	checkGuest,
+	upload.single("shopPhoto"),
+	catchAsync(AuthControllers.register)
+);
 
 router.patch(
-	"/update/:userId",
+	"/update",
+	checkAuth,
 	upload.fields([
 		{ name: "shopPhoto", maxCount: 1 },
 		{ name: "image", maxCount: 1 },
