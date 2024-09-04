@@ -6,7 +6,7 @@ const checkAuth = (req, res, next) => {
 	const token = authHeader && authHeader.split(" ")[1];
 
 	if (!token) {
-		throwError("Please Provide a Valid Token", 403);
+		throwError("Token missing", 400);
 	}
 
 	jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {

@@ -7,7 +7,7 @@ const orderSchema = new Schema(
 			ref: "Product",
 			required: true,
 		},
-		userId: {
+		orderedBy: {
 			type: Schema.Types.ObjectId,
 			ref: "Customer",
 			required: true,
@@ -17,6 +17,10 @@ const orderSchema = new Schema(
 			required: true,
 		},
 		orderMethod: { type: String, enum: ["cash", "online"], required: true },
+		count: { type: Number, min: 1, required: true },
+		deliveryCharge: { type: Number, default: 50 },
+		productPrice: { type: Number, required: true },
+		totalPrice: { type: Number, required: true },
 		division: {
 			type: String,
 			required: true,
@@ -40,18 +44,19 @@ const orderSchema = new Schema(
 		houseNo: String,
 		status: {
 			type: String,
-			enum: ["pending", "declined", "cart", "accepted"],
+			enum: ["pending", "declined", "cart", "accepted", "cancelled", "failed"],
 			default: "pending",
 		},
 		tranxId: {
 			type: String,
 			required: true,
 		},
-		deliveryCharge: { type: Number, default: 0 },
+		paymentUrl: String,
+		note: String,
 	},
 	{ timestamps: true }
 );
 
-const Review = models.Review || model("Review", orderSchema);
+const Order = models.Order || model("Order", orderSchema);
 
-module.exports = Review;
+module.exports = Order;

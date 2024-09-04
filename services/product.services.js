@@ -49,7 +49,30 @@ const deleteImageById = async (productId, imageId) => {
 	return product;
 };
 
+// update product stock
+const updateProductStock = async (productId, count, type) => {
+	let product;
+	if (type === "INC") {
+		// Increase product stock by count
+		product = await Product.findByIdAndUpdate(
+			productId,
+			{ $inc: { stock: count } },
+			{ new: true }
+		);
+	} else {
+		// Decrease product stock by count
+		product = await Product.findByIdAndUpdate(
+			productId,
+			{ $inc: { stock: -count } },
+			{ new: true }
+		);
+	}
+
+	return product;
+};
+
 module.exports.ProductServices = {
 	getAllProducts,
 	deleteImageById,
+	updateProductStock,
 };

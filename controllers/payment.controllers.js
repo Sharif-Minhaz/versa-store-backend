@@ -1,18 +1,17 @@
-const router = require("express").Router();
 const SSLCommerzPayment = require("sslcommerz-lts");
-const { checkAuth } = require("../middlewares/auth");
+const { throwError } = require("../utils/throwError");
 
-router.post("/ssl-request", checkAuth, async (req, res) => {
+const initSSL_Commerz = async (req, res) => {
 	const {
 		price,
-		name,
+		productName,
 		customer_name,
 		customer_email,
 		customer_add = "Dhaka",
 		customer_phone = "01300000000",
 		customer_postcode = "1000",
 		customer_country = "Bangladesh",
-		product_category = "Food",
+		product_category = "Stuff",
 		tran_id,
 	} = req.body;
 
@@ -20,11 +19,11 @@ router.post("/ssl-request", checkAuth, async (req, res) => {
 		total_amount: Number(price),
 		currency: "BDT",
 		tran_id,
-		success_url: `/payment/success?tran_id=${tran_id}`,
-		fail_url: `/payment/fail?tran_id=${tran_id}`,
-		cancel_url: `/payment/cancel?tran_id=${tran_id}`,
+		success_url: `${process.env.SERVER_URL}/payment/success?tran_id=${tran_id}`,
+		fail_url: `${process.env.SERVER_URL}/payment/fail?tran_id=${tran_id}`,
+		cancel_url: `${process.env.SERVER_URL}/payment/cancel?tran_id=${tran_id}`,
 		shipping_method: "No",
-		product_name: name,
+		product_name: productName,
 		product_category: product_category,
 		product_profile: "general",
 		cus_name: customer_name,
@@ -42,7 +41,7 @@ router.post("/ssl-request", checkAuth, async (req, res) => {
 		value_b: "ref002_B",
 		value_c: "ref003_C",
 		value_d: "ref004_D",
-		ipn_url: `${process.env.SERVER_ROOT}/payment/notification`,
+		ipn_url: `${process.env.SERVER_URL}/payment/notification`,
 	};
 
 	const sslcommerz = new SSLCommerzPayment(
@@ -56,11 +55,10 @@ router.post("/ssl-request", checkAuth, async (req, res) => {
 			return res.status(200).json({ url: data.GatewayPageURL });
 		}
 
-		return res.status(400).json({
-			success: false,
-			message: "Session was not successful",
-		});
+		throwError("Session was not successful", 400);
 	});
-});
+};
 
-module.exports = router;
+module.exports.PaymentControllers = {
+	initSSL_Commerz,
+};
