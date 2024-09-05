@@ -9,7 +9,17 @@ const { uploadImageHandler } = require("../utils/uploadImage");
 const { deleteImage } = require("../utils/deleteImage");
 const { BANNED_MESSAGE } = require("../consts");
 
-const refreshToken = (refreshToken) => {
+const checkIfUserExists = async (email) => {
+	const [customer, vendor, admin] = await Promise.all([
+		Customer.exists({ email }),
+		Vendor.exists({ email }),
+		Admin.exists({ email }),
+	]);
+
+	return { customer, vendor, admin };
+};
+
+const refreshToken = async (refreshToken) => {
 	const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
 
 	if (!decoded) {
@@ -21,25 +31,28 @@ const refreshToken = (refreshToken) => {
 	}
 
 	// check if customer exists
-	const customer = Customer.findById(decoded._id);
+	const { customer, vendor, admin } = await checkIfUserExists(decoded.email);
+	let user = null;
 
-	if (!customer) {
-		throw new Error("Customer not found");
+	// registration based on role
+	if (admin) {
+		user = await Admin.findById(decoded._id);
+	} else if (vendor) {
+		// for vendor type user
+		// update the vendor user
+		user = await Vendor.findById(decoded._id);
+	} else if (customer) {
+		// update admin
+		user = await Customer.findById(decoded._id);
 	}
 
-	const token = getNewTokens(customer);
+	if (!user) {
+		throw new Error("User not found");
+	}
 
-	return token;
-};
+	const tokens = getNewTokens(user);
 
-const checkIfUserExists = async (email) => {
-	const [customer, vendor, admin] = await Promise.all([
-		Customer.exists({ email }),
-		Vendor.exists({ email }),
-		Admin.exists({ email }),
-	]);
-
-	return { customer, vendor, admin };
+	return { accessToken: tokens.accessToken };
 };
 
 const customerRegistration = async (body) => {

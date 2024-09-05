@@ -89,16 +89,20 @@ const register = async (req, res) => {
 const refreshToken = async (req, res) => {
 	const { refreshToken } = req.body || {};
 
-	if (!refreshToken) throwError("Please provide refresh Token", 400);
+	if (!refreshToken) throwError("Please provide a refresh Token", 400);
 
 	const result = await AuthServices.refreshToken(refreshToken);
 
-	res.status(200).json(result);
+	res.status(200).json({ success: true, ...result });
 };
 
 // **************** update user ****************
 const updateUser = async (req, res) => {
-	const updateFor = req.user?.user_type || "customer";
+	const updateFor = req.user?.user_type;
+
+	console.log("auth.controllers", req.user);
+
+	if (!updateFor) throwError("Got no user information", 500);
 
 	let user = null;
 	// registration based on role
