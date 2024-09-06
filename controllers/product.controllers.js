@@ -1,5 +1,6 @@
 const Category = require("../models/Category.model");
 const Product = require("../models/Product.model");
+const Customer = require("../models/Customer.model");
 const { ProductServices } = require("../services/product.services");
 const { capitalize } = require("../utils/capitalizeString");
 const { deleteImage } = require("../utils/deleteImage");
@@ -179,6 +180,37 @@ const deleteProductImage = async (req, res) => {
 	res.status(200).json({ success: true, product: deletedInfo });
 };
 
+// bookmark a product
+const toggleBookmark = async (req, res) => {
+	const { productId } = req.params;
+	if (!productId) throwError("Product id required", 400);
+
+	const { _id, user_type } = req.user;
+
+	if (user_type !== "customer") throwError("Bookmark feature is only for customers", 403);
+
+	const isProductExist = await Product.exists({ _id: productId });
+	if (!isProductExist) throwError("Product doesn't exist", 404);
+
+	const customer = await Customer.findById(_id);
+
+	// check if product is already bookmarked
+	const isBookmarked = customer.bookmarks.includes(productId);
+
+	// add to bookmarks if not already, remove if it is
+	const update = isBookmarked
+		? { $pull: { bookmarks: productId } } // remove from bookmark
+		: { $addToSet: { bookmarks: productId } }; // add to bookmark
+
+	await Customer.findByIdAndUpdate(_id, update);
+
+	res.status(200).json({
+		success: true,
+		bookmarked: !isBookmarked,
+		message: `Product has been ${isBookmarked ? "removed from" : "added to"} bookmarks`,
+	});
+};
+
 module.exports.ProductControllers = {
 	getAllProducts,
 	singleProduct,
@@ -186,4 +218,5 @@ module.exports.ProductControllers = {
 	updateProduct,
 	deleteProduct,
 	deleteProductImage,
+	toggleBookmark,
 };

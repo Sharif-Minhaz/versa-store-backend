@@ -100,8 +100,6 @@ const refreshToken = async (req, res) => {
 const updateUser = async (req, res) => {
 	const updateFor = req.user?.user_type;
 
-	console.log("auth.controllers", req.user);
-
 	if (!updateFor) throwError("Got no user information", 500);
 
 	let user = null;

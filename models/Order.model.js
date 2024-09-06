@@ -25,11 +25,11 @@ const orderSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		zilla: {
+		district: {
 			type: String,
 			required: true,
 		},
-		upazilla: {
+		subDistrict: {
 			type: String,
 			required: true,
 		},

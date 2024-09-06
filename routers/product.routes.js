@@ -34,4 +34,7 @@ router.delete(
 	catchAsync(ProductControllers.deleteProductImage)
 );
 
+// product bookmark
+router.patch("/bookmark/:productId", checkAuth, catchAsync(ProductControllers.toggleBookmark));
+
 module.exports = router;

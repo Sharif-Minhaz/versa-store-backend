@@ -1,5 +1,4 @@
 const SSLCommerzPayment = require("sslcommerz-lts");
-const { throwError } = require("../utils/throwError");
 
 const initSSL_Commerz = async (req, res) => {
 	const {
@@ -55,7 +54,7 @@ const initSSL_Commerz = async (req, res) => {
 			return res.status(200).json({ url: data.GatewayPageURL });
 		}
 
-		throwError("Session was not successful", 400);
+		res.status(400).json({ success: false, message: "Session was not successful" });
 	});
 };
 
