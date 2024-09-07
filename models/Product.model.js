@@ -41,6 +41,10 @@ const productSchema = new Schema(
 			min: 1,
 			required: true,
 		},
+		sold: {
+			type: Number,
+			default: 0,
+		},
 		defaultType: String, // default variant
 		variant: [
 			{

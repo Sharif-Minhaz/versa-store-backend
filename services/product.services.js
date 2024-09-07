@@ -10,6 +10,7 @@ const getAllProducts = async (query) => {
 	const products = await Product.find(category ? { category } : {})
 		.skip(start)
 		.limit(limit)
+		.populate("addedBy")
 		.populate({
 			path: "category",
 			select: "name image",
@@ -56,14 +57,14 @@ const updateProductStock = async (productId, count, type) => {
 		// Increase product stock by count
 		product = await Product.findByIdAndUpdate(
 			productId,
-			{ $inc: { stock: count } },
+			{ $inc: { stock: count, sold: -count } },
 			{ new: true }
 		);
 	} else {
 		// Decrease product stock by count
 		product = await Product.findByIdAndUpdate(
 			productId,
-			{ $inc: { stock: -count } },
+			{ $inc: { stock: -count, sold: count } },
 			{ new: true }
 		);
 	}

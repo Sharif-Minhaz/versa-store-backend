@@ -34,6 +34,11 @@ router.delete(
 	catchAsync(ProductControllers.deleteProductImage)
 );
 
+// popular product
+router.get("/popular", catchAsync(ProductControllers.getPopularProducts));
+
+router.get("/vendor/:userId", catchAsync(ProductControllers.getVendorProducts));
+
 // product bookmark
 router.patch("/bookmark/:productId", checkAuth, catchAsync(ProductControllers.toggleBookmark));
 

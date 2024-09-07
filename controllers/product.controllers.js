@@ -35,6 +35,7 @@ const singleProduct = async (req, res) => {
 
 	// find product
 	const product = await Product.findById(productId)
+		.populate("addedBy")
 		.populate({
 			path: "category",
 			select: "name image",
@@ -165,7 +166,7 @@ const deleteProduct = async (req, res) => {
 
 	res.status(200).json({
 		success: true,
-		message: "Product deleted successfully",
+		message: `Product: ${productId} deleted successfully`,
 	});
 };
 
@@ -211,6 +212,26 @@ const toggleBookmark = async (req, res) => {
 	});
 };
 
+const getPopularProducts = async (req, res) => {
+	const products = await Product.find().sort({ sold: -1 }).populate("category addedBy");
+
+	res.status(200).json({ success: true, products });
+};
+
+const getVendorProducts = async (req, res) => {
+	const { userId } = req.params;
+
+	if (!userId) throwError("Vendor id required", 400);
+
+	const products = await Product.find({ addedBy: userId }).populate("category addedBy");
+
+	res.status(200).json({
+		success: true,
+		products,
+		id: userId,
+	});
+};
+
 module.exports.ProductControllers = {
 	getAllProducts,
 	singleProduct,
@@ -219,4 +240,6 @@ module.exports.ProductControllers = {
 	deleteProduct,
 	deleteProductImage,
 	toggleBookmark,
+	getVendorProducts,
+	getPopularProducts,
 };
