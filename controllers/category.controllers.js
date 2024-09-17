@@ -15,8 +15,6 @@ const addCategory = async (req, res) => {
 	const { name } = req.body;
 	const imageFile = req.file;
 
-	if (!name) throwError("Category name is required", 400);
-
 	// check if the category already exist
 	const isCategoryExist = await Category.exists({
 		name: { $regex: new RegExp("^" + name + "$", "i") },
