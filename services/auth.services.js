@@ -52,7 +52,7 @@ const refreshToken = async (refreshToken) => {
 
 	const tokens = getNewTokens(user);
 
-	return { accessToken: tokens.accessToken };
+	return tokens;
 };
 
 const customerRegistration = async (body) => {

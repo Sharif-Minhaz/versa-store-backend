@@ -65,6 +65,7 @@ const register = async (req, res) => {
 	} else {
 		// for vendor type user
 		// create the vendor user
+		if (!req.file) throwError("Shop image is required for validation", 400);
 		user = await AuthServices.vendorRegistration(req.body, req.file);
 	}
 
@@ -91,9 +92,9 @@ const refreshToken = async (req, res) => {
 
 	if (!refreshToken) throwError("Please provide a refresh Token", 400);
 
-	const result = await AuthServices.refreshToken(refreshToken);
+	const tokens = await AuthServices.refreshToken(refreshToken);
 
-	res.status(200).json({ success: true, ...result });
+	res.status(200).json({ success: true, tokens });
 };
 
 // **************** update user ****************
