@@ -36,4 +36,6 @@ router.patch(
 
 router.post("/refresh-token", checkAuth, catchAsync(AuthControllers.refreshToken));
 
+router.get("/profile", checkAuth, catchAsync(AuthControllers.getProfile));
+
 module.exports = router;

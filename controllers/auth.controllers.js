@@ -126,4 +126,34 @@ const updateUser = async (req, res) => {
 	});
 };
 
-module.exports.AuthControllers = { refreshToken, login, register, continueWithGoogle, updateUser };
+const getProfile = async (req, res) => {
+	const updateFor = req.user?.user_type;
+	const userId = req.user?._id;
+
+	if (!updateFor) throwError("Got no user information", 500);
+
+	let user = null;
+	// registration based on role
+	if (updateFor === "customer") {
+		// update the customer user
+		user = await Customer.findById(userId).lean();
+	} else if (updateFor === "vendor") {
+		// for vendor type user
+		// update the vendor user
+		user = await Vendor.findById(userId).lean();
+	} else {
+		// update admin
+		user = await Admin.findById(userId).lean();
+	}
+
+	res.status(200).json({ success: true, profile: user });
+};
+
+module.exports.AuthControllers = {
+	refreshToken,
+	getProfile,
+	login,
+	register,
+	continueWithGoogle,
+	updateUser,
+};
