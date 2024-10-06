@@ -52,7 +52,8 @@ const createOrder = async (req, res) => {
 
 		// add the payment url
 		await Order.findOneAndUpdate(newOrder._id, { paymentUrl: paymentInfo.url });
-		return res.status(200).json({ url: paymentInfo.url }); // TODO: redirect to ssl-commerz payment page
+		console.log(paymentInfo.url);
+		return res.redirect(paymentInfo.url);
 	}
 	res.status(201).json({ success: true, message: "Order created", order: newOrder });
 };
