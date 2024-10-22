@@ -53,7 +53,7 @@ const cancelPayment = async (req, res) => {
 	);
 	// update product stock
 	await ProductServices.updateProductStock(orderInfo.productId, orderInfo.count, "INC");
-	res.status(200).json({ success: true, message: "Payment cancelled successfully" });
+	res.redirect(`${process.env.CLIENT_URL}/`);
 };
 
 // payment success
@@ -61,7 +61,7 @@ const successPayment = async (req, res) => {
 	const { tran_id } = req.query;
 	await Order.findOneAndUpdate({ tranxId: tran_id }, { status: "accepted" }, { new: true });
 
-	res.status(200).json({ success: true, message: "Payment received successfully" });
+	res.redirect(`${process.env.CLIENT_URL}/`);
 };
 
 // fail payment
@@ -75,7 +75,7 @@ const failPayment = async (req, res) => {
 	// update product stock
 	await ProductServices.updateProductStock(orderInfo.productId, orderInfo.count, "INC");
 
-	res.status(200).json({ success: true, message: "Payment failed" });
+	res.redirect(`${process.env.CLIENT_URL}/`);
 };
 
 module.exports.PaymentServices = {
