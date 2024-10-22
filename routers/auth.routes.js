@@ -34,7 +34,7 @@ router.patch(
 	catchAsync(AuthControllers.updateUser)
 );
 
-router.post("/refresh-token", checkAuth, catchAsync(AuthControllers.refreshToken));
+router.post("/refresh-token", catchAsync(AuthControllers.refreshToken));
 
 router.get("/profile", checkAuth, catchAsync(AuthControllers.getProfile));
 

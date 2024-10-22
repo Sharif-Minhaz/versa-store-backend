@@ -51,8 +51,11 @@ const createOrder = async (req, res) => {
 		);
 
 		// add the payment url
-		await Order.findOneAndUpdate(newOrder._id, { paymentUrl: paymentInfo.url });
-		console.log(paymentInfo.url);
+		await Order.findOneAndUpdate(newOrder._id, {
+			paymentUrl: paymentInfo.url,
+			status: "pending",
+		});
+
 		return res.redirect(paymentInfo.url);
 	}
 	res.status(201).json({ success: true, message: "Order created", order: newOrder });
