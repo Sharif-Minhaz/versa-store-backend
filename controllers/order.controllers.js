@@ -6,20 +6,24 @@ const { throwError } = require("../utils/throwError");
 
 // create an order
 const createOrder = async (req, res) => {
-	const { productId } = req.params;
-	const { orderMethod, count } = req.body;
+	const { orderMethod, products, deliveryCharge } = req.body;
 
-	if (!productId) throwError("Product id not found", 400);
+	if (products?.length === 0) throwError("No products found", 404);
 
-	// find the product
-	const product = await Product.findById(productId).populate("category").lean();
+	// retrieve all products promises
+	const allProducts = products.map((item) => {
+		return Product.findById(item.product).populate("category");
+	});
 
-	// check if the product is still available or not
-	if (!product)
-		throwError("The product you want to buy, is not available or doesn't exist.", 404);
+	// resolve all promises
+	const allProductsAvailable = await Promise.all(allProducts);
 
 	// validate product' total price in the backend again
-	const originalPrice = product.price * Number(count) + product.deliveryCharge;
+	const originalPrice = allProductsAvailable.reduce((prev, product) => {
+		// find the associate count of the product
+		const count = products.find((prod) => prod.product === product._id?.toString()).count;
+		return Number(product.price) * count + prev;
+	}, 0);
 
 	const orderedBy = req.user._id;
 	const tranxId = crypto.randomUUID();
@@ -27,25 +31,25 @@ const createOrder = async (req, res) => {
 	// create new order
 	const newOrder = await Order.create({
 		...req.body,
-		productId,
-		totalPrice: originalPrice,
-		productPrice: product.price,
+		products,
+		totalPrice: originalPrice + deliveryCharge, // add delivery charge with the total price
+		productPrice: originalPrice,
 		orderedBy,
 		tranxId,
-		deliveryCharge: product.deliveryCharge,
+		deliveryCharge,
 	});
 
-	if (newOrder) await ProductServices.updateProductStock(productId, count, "DEC"); // decrement product from stock
+	if (newOrder) await ProductServices.updateProductStock(products, "DEC"); // decrement product from stock
 
 	// fetch req to ssl-commerz to create session
 	if (orderMethod === "online") {
 		const paymentInfo = await PaymentServices.payment(
 			{
 				...req.body,
-				productName: product.name,
+				productName: allProductsAvailable.map((product) => product).join(", "),
 				totalPrice: originalPrice,
 				tranxId,
-				productCategory: product?.category?.name || "stuff",
+				productCategory: "stuff",
 			},
 			req.user // pass logged in user too
 		);
@@ -73,7 +77,7 @@ const deleteOrder = async (req, res) => {
 	if (!order) throwError("Order not found to delete", 404);
 
 	// restore the stock count to the original product
-	await ProductServices.updateProductStock(order.productId, order.count, "INC");
+	await ProductServices.updateProductStock(order.products, "INC");
 
 	res.status(200).json({ success: true, message: "Order deleted successfully" });
 };
@@ -94,7 +98,7 @@ const rejectOrder = async (req, res) => {
 	if (!order) throwError("Order not found to reject", 404);
 
 	// restore the stock count to the original product
-	await ProductServices.updateProductStock(order.productId, order.count, "INC");
+	await ProductServices.updateProductStock(order.products, "INC");
 
 	res.status(200).json({ success: true, message: "Order rejected successfully" });
 };
@@ -113,4 +117,41 @@ const acceptedOrder = async (req, res) => {
 	res.status(200).json({ success: true, message: "Order accepted successfully" });
 };
 
-module.exports.OrderControllers = { createOrder, deleteOrder, acceptedOrder, rejectOrder };
+// user specific orders
+const findUserOrders = async (req, res) => {
+	const orderedBy = req.user._id;
+
+	if (!orderedBy) throwError("User id required", 400);
+
+	// find orders
+	const orders = await Order.find({ orderedBy: orderedBy })
+		.populate({
+			path: "products.product",
+			select: "name description images price",
+		})
+		.populate("orderedBy")
+		.lean();
+
+	res.status(200).json({ success: true, orders });
+};
+
+const getAllOrders = async (req, res) => {
+	const orders = await Order.find()
+		.populate({
+			path: "products.product",
+			select: "name description images price",
+		})
+		.populate("orderedBy")
+		.lean();
+
+	res.status(200).json({ success: true, orders });
+};
+
+module.exports.OrderControllers = {
+	createOrder,
+	deleteOrder,
+	acceptedOrder,
+	rejectOrder,
+	findUserOrders,
+	getAllOrders,
+};

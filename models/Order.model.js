@@ -2,11 +2,21 @@ const { model, models, Schema } = require("mongoose");
 
 const orderSchema = new Schema(
 	{
-		productId: {
-			type: Schema.Types.ObjectId,
-			ref: "Product",
-			required: true,
-		},
+		products: [
+			{
+				product: {
+					type: Schema.Types.ObjectId,
+					ref: "Product",
+					required: true,
+				},
+				count: {
+					type: Number,
+					required: true,
+					min: 1,
+					default: 1,
+				},
+			},
+		],
 		orderedBy: {
 			type: Schema.Types.ObjectId,
 			ref: "Customer",
@@ -17,7 +27,6 @@ const orderSchema = new Schema(
 			required: true,
 		},
 		orderMethod: { type: String, enum: ["cash", "online"], required: true },
-		count: { type: Number, min: 1, required: true },
 		deliveryCharge: { type: Number, default: 50 },
 		productPrice: { type: Number, required: true },
 		totalPrice: { type: Number, required: true },

@@ -51,25 +51,29 @@ const deleteImageById = async (productId, imageId) => {
 };
 
 // update product stock
-const updateProductStock = async (productId, count, type) => {
-	let product;
+const updateProductStock = async (products, type) => {
 	if (type === "INC") {
 		// Increase product stock by count
-		product = await Product.findByIdAndUpdate(
-			productId,
-			{ $inc: { stock: count, sold: -count } },
-			{ new: true }
-		);
+		const productPromise = products.map((product) => {
+			return Product.findByIdAndUpdate(
+				product.productId,
+				{ $inc: { stock: product.count, sold: -product.count } },
+				{ new: true }
+			);
+		});
+		await Promise.all(productPromise);
 	} else {
 		// Decrease product stock by count
-		product = await Product.findByIdAndUpdate(
-			productId,
-			{ $inc: { stock: -count, sold: count } },
-			{ new: true }
-		);
-	}
+		const productPromise = products.map((product) => {
+			return Product.findByIdAndUpdate(
+				product.productId,
+				{ $inc: { stock: -product.count, sold: product.count } },
+				{ new: true }
+			);
+		});
 
-	return product;
+		await Promise.all(productPromise);
+	}
 };
 
 module.exports.ProductServices = {

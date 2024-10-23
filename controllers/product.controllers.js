@@ -232,6 +232,16 @@ const getVendorProducts = async (req, res) => {
 	});
 };
 
+const getSearchResults = async (req, res) => {
+	const { term } = req.body;
+
+	const products = await Product.find({ $text: { $search: term } }).select(
+		"name description images _id price"
+	);
+
+	res.status(200).json({ success: true, products });
+};
+
 module.exports.ProductControllers = {
 	getAllProducts,
 	singleProduct,
@@ -242,4 +252,5 @@ module.exports.ProductControllers = {
 	toggleBookmark,
 	getVendorProducts,
 	getPopularProducts,
+	getSearchResults,
 };

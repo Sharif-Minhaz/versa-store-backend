@@ -59,6 +59,19 @@ const productSchema = new Schema(
 	}
 );
 
+productSchema.index(
+	{
+		name: "text",
+		description: "text",
+	},
+	{
+		weights: {
+			name: 5,
+			description: 3,
+		},
+	}
+);
+
 const Product = models.Product || model("Product", productSchema);
 
 module.exports = Product;

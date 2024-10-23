@@ -7,6 +7,7 @@ const { validateProduct } = require("../validators/productValidators");
 const { runValidation } = require("../validators");
 
 router.get("/", catchAsync(ProductControllers.getAllProducts));
+router.get("/search", catchAsync(ProductControllers.getSearchResults));
 router.get("/single/:productId", catchAsync(ProductControllers.singleProduct));
 router.post(
 	"/",
