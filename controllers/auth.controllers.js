@@ -136,7 +136,12 @@ const getProfile = async (req, res) => {
 	// registration based on role
 	if (updateFor === "customer") {
 		// update the customer user
-		user = await Customer.findById(userId).lean();
+		user = await Customer.findById(userId)
+			.populate({
+				path: "bookmarks",
+				select: "name description price images",
+			})
+			.lean();
 	} else if (updateFor === "vendor") {
 		// for vendor type user
 		// update the vendor user
