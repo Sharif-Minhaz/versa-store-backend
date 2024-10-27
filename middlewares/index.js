@@ -22,7 +22,12 @@ const middlewares = [
 	xssClean(),
 	cors({
 		credentials: true,
-		origin: ["http://localhost:5173", "https://versa-store.netlify.app"],
+		allowedHeaders: "Content-Type,Authorization",
+		origin: [
+			"http://localhost:5173",
+			"http://localhost:8080",
+			"https://versa-store.onrender.app",
+		],
 	}),
 	cookieParser(),
 ];

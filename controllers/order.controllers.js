@@ -60,7 +60,7 @@ const createOrder = async (req, res) => {
 			status: "pending",
 		});
 
-		return res.redirect(paymentInfo.url);
+		return res.status(201).json({ url: paymentInfo.url });
 	}
 	res.status(201).json({ success: true, message: "Order created", order: newOrder });
 };
