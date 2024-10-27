@@ -60,9 +60,14 @@ const createOrder = async (req, res) => {
 			status: "pending",
 		});
 
-		return res.status(201).json({ url: paymentInfo.url });
+		return res.status(201).json({ url: paymentInfo.url, orderMethod: "online" });
 	}
-	res.status(201).json({ success: true, message: "Order created", order: newOrder });
+	res.status(201).json({
+		success: true,
+		message: "Order created",
+		order: newOrder,
+		orderMethod: "cash",
+	});
 };
 
 // delete the order
