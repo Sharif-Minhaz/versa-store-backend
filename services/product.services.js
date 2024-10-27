@@ -56,7 +56,7 @@ const updateProductStock = async (products, type) => {
 		// Increase product stock by count
 		const productPromise = products.map((product) => {
 			return Product.findByIdAndUpdate(
-				product.productId,
+				product.product,
 				{ $inc: { stock: product.count, sold: -product.count } },
 				{ new: true }
 			);
@@ -66,7 +66,7 @@ const updateProductStock = async (products, type) => {
 		// Decrease product stock by count
 		const productPromise = products.map((product) => {
 			return Product.findByIdAndUpdate(
-				product.productId,
+				product.product,
 				{ $inc: { stock: -product.count, sold: product.count } },
 				{ new: true }
 			);

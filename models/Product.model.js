@@ -53,6 +53,10 @@ const productSchema = new Schema(
 				description: { type: String, required: true },
 			},
 		],
+		deliveryCharge: {
+			type: Number,
+			default: 50,
+		},
 	},
 	{
 		timestamps: true,

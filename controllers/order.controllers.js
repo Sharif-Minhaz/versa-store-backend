@@ -6,7 +6,7 @@ const { throwError } = require("../utils/throwError");
 
 // create an order
 const createOrder = async (req, res) => {
-	const { orderMethod, products, deliveryCharge } = req.body;
+	const { orderMethod, products, deliveryCharge = 50 } = req.body;
 
 	if (products?.length === 0) throwError("No products found", 404);
 
@@ -28,11 +28,13 @@ const createOrder = async (req, res) => {
 	const orderedBy = req.user._id;
 	const tranxId = crypto.randomUUID();
 
+	const totalPrice = originalPrice + deliveryCharge;
+
 	// create new order
 	const newOrder = await Order.create({
 		...req.body,
 		products,
-		totalPrice: originalPrice + deliveryCharge, // add delivery charge with the total price
+		totalPrice, // add delivery charge with the total price
 		productPrice: originalPrice,
 		orderedBy,
 		tranxId,
@@ -47,7 +49,7 @@ const createOrder = async (req, res) => {
 			{
 				...req.body,
 				productName: allProductsAvailable.map((product) => product).join(", "),
-				totalPrice: originalPrice,
+				totalPrice,
 				tranxId,
 				productCategory: "stuff",
 			},
@@ -129,7 +131,7 @@ const findUserOrders = async (req, res) => {
 	if (!orderedBy) throwError("User id required", 400);
 
 	// find orders
-	const orders = await Order.find({ orderedBy: orderedBy })
+	const orders = await Order.find({ orderedBy })
 		.populate({
 			path: "products.product",
 			select: "name description images price",

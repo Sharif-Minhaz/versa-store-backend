@@ -52,7 +52,7 @@ const cancelPayment = async (req, res) => {
 		{ new: true }
 	);
 	// update product stock
-	await ProductServices.updateProductStock(orderInfo.products, orderInfo.count, "INC");
+	await ProductServices.updateProductStock(orderInfo.products, "INC");
 	res.redirect(`${process.env.CLIENT_URL}/`);
 };
 
@@ -73,7 +73,7 @@ const failPayment = async (req, res) => {
 		{ new: true }
 	);
 	// update product stock
-	await ProductServices.updateProductStock(orderInfo.products, orderInfo.count, "INC");
+	await ProductServices.updateProductStock(orderInfo.products, "INC");
 
 	res.redirect(`${process.env.CLIENT_URL}/`);
 };
