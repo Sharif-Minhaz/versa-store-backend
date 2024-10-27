@@ -22,8 +22,11 @@ const createOrder = async (req, res) => {
 	const originalPrice = allProductsAvailable.reduce((prev, product) => {
 		// find the associate count of the product
 		const count = products.find((prod) => prod.product === product._id?.toString()).count;
-		return Number(product.price) * count + prev;
+		const discountPrice = (Number(product.price) * product.discount) / 100;
+		return (product.price - discountPrice) * count + prev;
 	}, 0);
+
+	console.log(originalPrice);
 
 	const orderedBy = req.user._id;
 	const tranxId = crypto.randomUUID();
