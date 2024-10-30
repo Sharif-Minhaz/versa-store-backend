@@ -233,7 +233,7 @@ const getVendorProducts = async (req, res) => {
 };
 
 const getSearchResults = async (req, res) => {
-	const { term } = req.body;
+	const { term = "" } = req.query;
 
 	const products = await Product.find({ $text: { $search: term } }).select(
 		"name description images _id price"

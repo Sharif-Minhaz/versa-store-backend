@@ -26,8 +26,6 @@ const createOrder = async (req, res) => {
 		return (product.price - discountPrice) * count + prev;
 	}, 0);
 
-	console.log(originalPrice);
-
 	const orderedBy = req.user._id;
 	const tranxId = crypto.randomUUID();
 
