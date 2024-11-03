@@ -16,8 +16,14 @@ const reviewSchema = new Schema(
 		review: String,
 		userId: {
 			type: Schema.Types.ObjectId,
-			ref: "Customer",
 			required: true,
+			refPath: "userIdModel",
+		},
+		userIdModel: {
+			type: String,
+			required: true,
+			enum: ["Vendor", "Admin", "Customer"],
+			default: "Customer",
 		},
 	},
 	{ timestamps: true }

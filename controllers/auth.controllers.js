@@ -47,9 +47,55 @@ const login = async (req, res) => {
 
 // **************** google login ****************
 const continueWithGoogle = async (req, res) => {
-	res.status(201).json({
+	const { email, name, picture, loginFor = "customer" } = req.body;
+
+	// if user already exist with same email return that user
+	const existedUser = await Customer.findOne({
+		email,
+		loginMethod: "form",
+		isBan: false,
+		user_type: loginFor,
+	}).lean();
+
+	if (existedUser) {
+		const tokens = getNewTokens(existedUser);
+
+		// removing the password field from user
+		const userInfo = Object.assign({}, existedUser);
+		delete userInfo.password;
+
+		return res.status(200).json({
+			message: "Login successful",
+			success: true,
+			user: userInfo,
+			tokens,
+		});
+	}
+	// try to find the user as google user
+	let user = await Customer.findOne({
+		email,
+		name,
+		loginMethod: "google",
+		isBan: false,
+	}).lean();
+
+	if (!user) {
+		// create a new user
+		user = await Customer.create({
+			fullName: name,
+			email,
+			loginMethod: "google",
+			image: picture,
+			user_type: "customer",
+		}).then((doc) => doc.toObject());
+	}
+
+	const tokens = getNewTokens(user);
+	res.status(200).json({
+		message: "Login with google is successful",
 		success: true,
-		message: "Google login success",
+		user,
+		tokens,
 	});
 };
 

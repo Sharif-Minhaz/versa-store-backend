@@ -5,7 +5,7 @@ const { throwError } = require("../utils/throwError");
 const addReview = async (req, res) => {
 	const { productId } = req.params;
 	const { rating, review } = req.body;
-	const { _id: userId } = req.user;
+	const { _id: userId, user_type } = req.user;
 
 	// check if the product exists
 	const productExists = await Product.exists({ _id: productId });
@@ -21,6 +21,7 @@ const addReview = async (req, res) => {
 		rating,
 		review,
 		userId,
+		userIdModel: user_type.replace(user_type.charAt(0), user_type.charAt(0).toUpperCase()),
 	});
 
 	res.status(201).json({
@@ -37,10 +38,12 @@ const findReviews = async (req, res) => {
 	if (!productId) throwError("Product id required", 400);
 
 	// fetch all reviews for the product
-	const reviews = await Review.find({ productId }).populate({
-		path: "userId",
-		select: "fullName image",
-	});
+	const reviews = await Review.find({ productId })
+		.populate({
+			path: "userId",
+			select: "fullName image",
+		})
+		.lean();
 
 	res.status(200).json({
 		success: true,
