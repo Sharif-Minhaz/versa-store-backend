@@ -49,38 +49,33 @@ const login = async (req, res) => {
 const continueWithGoogle = async (req, res) => {
 	const { email, name, picture, loginFor = "customer" } = req.body;
 
-	// if user already exist with same email return that user
-	const existedUser = await Customer.findOne({
+	// Check if the user already exists with form-based login
+	const formUser = await Customer.findOne({
 		email,
 		loginMethod: "form",
 		isBan: false,
 		user_type: loginFor,
 	}).lean();
 
-	if (existedUser) {
-		const tokens = getNewTokens(existedUser);
-
-		// removing the password field from user
-		const userInfo = Object.assign({}, existedUser);
-		delete userInfo.password;
-
-		return res.status(200).json({
-			message: "Login successful",
-			success: true,
-			user: userInfo,
-			tokens,
+	if (formUser) {
+		// Form login exists, ask them to use password login instead
+		return res.status(400).json({
+			message:
+				"This email is already registered with password. Please login with your password instead.",
+			success: false,
 		});
 	}
-	// try to find the user as google user
+
+	// Find or create a Google-based user
 	let user = await Customer.findOne({
 		email,
-		name,
 		loginMethod: "google",
 		isBan: false,
+		user_type: loginFor,
 	}).lean();
 
 	if (!user) {
-		// create a new user
+		// Create a new user for first-time Google login
 		user = await Customer.create({
 			fullName: name,
 			email,
@@ -90,9 +85,11 @@ const continueWithGoogle = async (req, res) => {
 		}).then((doc) => doc.toObject());
 	}
 
+	// Generate tokens for the user
 	const tokens = getNewTokens(user);
+
 	res.status(200).json({
-		message: "Login with google is successful",
+		message: "Login with Google is successful",
 		success: true,
 		user,
 		tokens,
