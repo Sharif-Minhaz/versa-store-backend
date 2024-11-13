@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const xssClean = require("xss-clean");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 const limiter = rateLimit({
 	windowMs: 1 * 60 * 1000, // 1 minute
@@ -14,6 +15,7 @@ const limiter = rateLimit({
 });
 
 const middlewares = [
+	helmet(),
 	express.static("public"),
 	express.json(),
 	express.urlencoded({ extended: true }),
