@@ -29,6 +29,7 @@ const middlewares = [
 			"http://localhost:5173",
 			"http://localhost:8080",
 			"https://versa-store.onrender.app",
+			"https://versa-store-frontend.vercel.app",
 		],
 	}),
 	cookieParser(),
